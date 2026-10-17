@@ -9,8 +9,8 @@ class AppCategoreis {
 
   static List<AppCategoreis> categoreis = [
     AppCategoreis(id: 'general', name: 'General', image: Assets.general),
-    AppCategoreis(id: 'busniess', name: 'Busniess', image: Assets.busniess),
-    AppCategoreis(id: 'sport', name: 'Sport', image: Assets.sport),
+    AppCategoreis(id: 'business', name: 'Busniess', image: Assets.busniess),
+    AppCategoreis(id: 'sports', name: 'Sport', image: Assets.sport),
     AppCategoreis(
       id: 'technology',
       name: 'Technology',

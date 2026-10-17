@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news/core/categoreis/app_categoreis.dart';
+import 'package:news/module/layout/models/sources_response.dart';
+import 'package:news/module/layout/service/api_manager.dart';
 import 'package:news/module/layout/widget/category_widget.dart';
 
 class LayoutScreen extends StatefulWidget {
@@ -11,6 +13,7 @@ class LayoutScreen extends StatefulWidget {
 }
 
 AppCategoreis? selectedCategory;
+Sources? selectedsource;
 
 class _LayoutScreenState extends State<LayoutScreen> {
   @override
@@ -44,6 +47,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
               child: InkWell(
                 onTap: () {
                   selectedCategory = null;
+                  selectedsource = null;
                   Navigator.pop(context);
                   setState(() {});
                 },
@@ -64,68 +68,120 @@ class _LayoutScreenState extends State<LayoutScreen> {
         ),
       ),
       body: selectedCategory != null
-          ? Column(
-              children: [
-                DefaultTabController(
-                  length: 10,
-                  child: TabBar(
-                    dividerColor: Colors.transparent,
-                    tabAlignment: .start,
-                    isScrollable: true,
-                    indicatorColor: theme.primaryColor,
-                    labelColor: theme.primaryColor,
-                    unselectedLabelColor: theme.primaryColor,
-                    tabs: [
-                      Text('All'),
-                      Text('All'),
-                      Text('All'),
-                      Text('All'),
-                      Text('All'),
-                      Text('All'),
-                      Text('All'),
-                      Text('All'),
-                      Text('All'),
-                      Text('All'),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: .all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: .circular(16),
-                    border: Border.all(color: theme.primaryColor),
-                  ),
-                  child: Column(
+          ? FutureBuilder(
+              future: ApiManager.getSource(selectedCategory!.id),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  var source = snapshot.data ?? [];
+                  if (selectedsource == null) {
+                    selectedsource = source.first;
+                  }
+                  return Column(
                     children: [
-                      ClipRRect(
-                        borderRadius: .circular(16),
-                        child: Image.asset('assets/image/test.jpg'),
+                      DefaultTabController(
+                        length: source.length,
+                        child: TabBar(
+                          onTap: (value) {
+                            selectedsource = source[value];
+                            setState(() {});
+                          },
+                          dividerColor: Colors.transparent,
+                          tabAlignment: .start,
+                          isScrollable: true,
+                          indicatorColor: theme.primaryColor,
+                          labelColor: theme.primaryColor,
+                          unselectedLabelColor: theme.primaryColor,
+                          tabs: source.map((e) {
+                            return Tab(text: e.name ?? '');
+                          }).toList(),
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        'yousef salah maarouf',
-                        style: theme.textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              ' By : yousef salah',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                          Text(
-                            'yousef salah',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
+
+                      Expanded(
+                        child: FutureBuilder(
+                          future: ApiManager.getNews(selectedsource!.id!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text(snapshot.data.toString()),
+                              );
+                            } else {
+                              var articles = snapshot.data ?? [];
+                              return ListView.separated(
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    padding: .all(16),
+                                    decoration: BoxDecoration(
+                                      borderRadius: .circular(16),
+                                      border: Border.all(
+                                        color: theme.primaryColor,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: .circular(16),
+                                          child: Image.network(
+                                            articles[index].urlToImage ??
+                                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU8gBmgKJfyFettXPVl5na8uYWmmCTKGkdjVzNUyjJFg&s=10',
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          articles[index].title ?? '',
+                                          style: theme.textTheme.titleSmall,
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                articles[index].author ?? '',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              articles[index].publishedAt!
+                                                  .substring(0, 10),
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  return const SizedBox(height: 16);
+                                },
+                                itemCount: articles.length,
+                              );
+                            }
+                          },
+                        ),
                       ),
                     ],
-                  ),
-                ),
-              ],
+                  );
+                } else if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else {
+                  return Center(
+                    child: Text(
+                      snapshot.error.toString(),
+                      style: theme.textTheme.titleSmall,
+                    ),
+                  );
+                }
+              },
             )
           : Padding(
               padding: const EdgeInsets.all(16.0),

@@ -17,7 +17,6 @@ class News extends StatelessWidget {
     return ChangeNotifierProvider<ThemeProvider>(
       create: (context) => ThemeProvider(),
       builder: (context, child) {
-        var provider = Provider.of<ThemeProvider>(context);
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.dark,
