@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news/core/categoreis/app_categoreis.dart';
-import 'package:news/module/layout/manager/layout_provider.dart';
-import 'package:news/module/layout/widget/category_widget.dart';
+import 'package:news/module/layout/view/manager/layout_provider.dart';
+import 'package:news/module/layout/view/widget/category_widget.dart';
 import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatelessWidget {

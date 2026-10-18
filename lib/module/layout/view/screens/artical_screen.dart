@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news/module/layout/manager/layout_provider.dart';
+import 'package:news/module/layout/view/manager/layout_provider.dart';
 import 'package:provider/provider.dart';
 
 class ArticalScreen extends StatelessWidget {

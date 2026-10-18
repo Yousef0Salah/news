@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news/core/theme/app_theme.dart';
 import 'package:news/core/theme/theme_provider.dart';
-import 'package:news/module/layout/view/layout_screen.dart';
+import 'package:news/module/layout/view/screens/layout_screen.dart';
 import 'package:news/module/splash/splash_screen.dart';
 import 'package:provider/provider.dart';
 

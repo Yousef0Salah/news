@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:news/core/categoreis/app_categoreis.dart';
-import 'package:news/module/layout/models/news_response.dart';
-import 'package:news/module/layout/models/sources_response.dart';
-import 'package:news/module/layout/service/api_manager.dart';
+import 'package:news/module/layout/data/models/news_response.dart';
+import 'package:news/module/layout/data/models/sources_response.dart';
+import 'package:news/module/layout/data/repo/repo.dart';
 
 class LayoutProvider extends ChangeNotifier {
   List<Sources>? sources = [];
@@ -12,6 +12,8 @@ class LayoutProvider extends ChangeNotifier {
   Sources? selectedsource;
 
   bool isLoading = false;
+
+  Repo repo = RepoImp();
 
   void onChangeCategoty(AppCategoreis category) {
     selectedCategory = category;
@@ -23,6 +25,7 @@ class LayoutProvider extends ChangeNotifier {
     selectedCategory = null;
     selectedsource = null;
     sources = [];
+    articles = [];
     notifyListeners();
   }
 
@@ -36,7 +39,7 @@ class LayoutProvider extends ChangeNotifier {
   Future<void> getSources() async {
     isLoading = true;
     try {
-      sources = await ApiManager.getSource(selectedCategory!.id);
+      sources = await repo.getSource(selectedCategory!.id);
       selectedsource = sources!.first;
       getNews();
     } catch (e) {
@@ -48,7 +51,7 @@ class LayoutProvider extends ChangeNotifier {
 
   Future<void> getNews() async {
     try {
-      articles = await ApiManager.getNews(selectedsource!.id!);
+      articles = await repo.getNews(selectedsource!.id!);
     } catch (e) {
       print(e.toString());
     }

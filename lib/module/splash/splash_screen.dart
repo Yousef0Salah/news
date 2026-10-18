@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news/core/const/assets.dart';
-import 'package:news/module/layout/view/layout_screen.dart';
+import 'package:news/module/layout/view/screens/layout_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

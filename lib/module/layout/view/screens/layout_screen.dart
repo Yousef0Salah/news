@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:news/module/layout/manager/layout_provider.dart';
-import 'package:news/module/layout/view/artical_screen.dart';
-import 'package:news/module/layout/view/category_screen.dart';
+import 'package:news/module/layout/view/manager/layout_provider.dart';
+import 'package:news/module/layout/view/screens/artical_screen.dart';
+import 'package:news/module/layout/view/screens/category_screen.dart';
 import 'package:provider/provider.dart';
 
 class LayoutScreen extends StatelessWidget {
