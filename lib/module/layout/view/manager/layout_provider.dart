@@ -25,7 +25,7 @@ class LayoutProvider extends ChangeNotifier {
     selectedCategory = null;
     selectedsource = null;
     sources = [];
-    articles = [];
+    // articles = [];
     notifyListeners();
   }
 
@@ -41,8 +41,9 @@ class LayoutProvider extends ChangeNotifier {
     try {
       sources = await repo.getSource(selectedCategory!.id);
       selectedsource = sources!.first;
-      getNews();
+      // getNews();
     } catch (e) {
+      getNews();
       print(e.toString());
     }
     isLoading = false;

@@ -5,7 +5,8 @@ import 'package:news/module/layout/view/screens/layout_screen.dart';
 import 'package:news/module/splash/splash_screen.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async{
+   
   runApp(const News());
 }
 

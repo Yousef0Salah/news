@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:news/module/layout/view/manager/layout_provider.dart';
 import 'package:provider/provider.dart';
@@ -42,10 +43,18 @@ class ArticalScreen extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: .circular(16),
-                        child: Image.network(
-                          provider.articles![index].urlToImage ??
-                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU8gBmgKJfyFettXPVl5na8uYWmmCTKGkdjVzNUyjJFg&s=10',
+                        child: CachedNetworkImage(
+                          imageUrl: provider.articles![index].urlToImage??'',
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
+
+                        // Image.network(
+                        //   provider.articles![index].urlToImage ??
+                        //       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU8gBmgKJfyFettXPVl5na8uYWmmCTKGkdjVzNUyjJFg&s=10',
+                        // ),
                       ),
                       const SizedBox(height: 16),
                       Text(
