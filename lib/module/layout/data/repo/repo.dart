@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:news/module/layout/data/data_source/local_data_source.dart';
 import 'package:news/module/layout/data/data_source/remote_data_source.dart';
 import 'package:news/module/layout/data/models/news_response.dart';
@@ -10,9 +11,11 @@ abstract class Repo {
   Future<List<Sources>> getSource(String categoryId);
 }
 
+@Injectable(as: Repo)
 class RepoImp implements Repo {
-  RemoteDataSource remoteDataSource = RemoteDataSourceImp();
-  LocalDataSource localDataSource = LocalDataSourceImp();
+  RemoteDataSource remoteDataSource;
+  LocalDataSource localDataSource;
+  RepoImp(this.localDataSource, this.remoteDataSource);
   @override
   Future<List<Articles>> getNews(String sourceId) async {
     final bool isConnected = await InternetConnection().hasInternetAccess;
@@ -22,7 +25,7 @@ class RepoImp implements Repo {
         if (response.statusCode == 200) {
           await localDataSource.saveNews(response.data);
           var data = NewsResponse.fromJson(response.data);
-          return data.articles ;
+          return data.articles;
         } else {
           throw response.data['message'];
         }

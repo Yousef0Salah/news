@@ -1,7 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:news/module/layout/view/manager/layout_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news/module/layout/view/cubit/layot_cubit.dart';
+import 'package:news/module/layout/view/cubit/layout_state.dart';
 
 class ArticalScreen extends StatelessWidget {
   const ArticalScreen({super.key});
@@ -9,88 +10,127 @@ class ArticalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    var cubit = BlocProvider.of<LayoutCubit>(context);
 
-    return Consumer<LayoutProvider>(
-      builder: (context, provider, child) => Column(
-        children: [
-          DefaultTabController(
-            length: provider.sources!.length,
-            child: TabBar(
-              onTap: (index) {
-                provider.onChangeSources(provider.sources![index]);
-              },
-              dividerColor: Colors.transparent,
-              tabAlignment: .start,
-              isScrollable: true,
-              indicatorColor: theme.primaryColor,
-              labelColor: theme.primaryColor,
-              unselectedLabelColor: theme.primaryColor,
-              tabs: provider.sources!.map((e) {
-                return Tab(text: e.name ?? '');
-              }).toList(),
-            ),
-          ),
-          Expanded(
-            child: ListView.separated(
-              itemBuilder: (context, index) {
-                return Container(
-                  padding: .all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: .circular(16),
-                    border: Border.all(color: theme.primaryColor),
-                  ),
-                  child: Column(
-                    children: [
-                      ClipRRect(
+    return Column(
+      children: [
+        BlocBuilder<LayoutCubit, LayoutState>(
+          buildWhen: (previous, current) =>
+              current is GetSourcesSuccessState ||
+              current is GetSourcesLoadingState ||
+              current is GetSourcesErrorState,
+
+          builder: (context, state) {
+            if (state is GetSourcesLoadingState) {
+              return Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              );
+            } else if (state is GetSourcesSuccessState) {
+              return DefaultTabController(
+                length: cubit.sources!.length,
+                child: TabBar(
+                  onTap: (index) {
+                    cubit.onChangeSources(cubit.sources![index]);
+                  },
+                  dividerColor: Colors.transparent,
+                  tabAlignment: .start,
+                  isScrollable: true,
+                  indicatorColor: theme.primaryColor,
+                  labelColor: theme.primaryColor,
+                  unselectedLabelColor: theme.primaryColor,
+                  tabs: cubit.sources!.map((e) {
+                    return Tab(text: e.name ?? '');
+                  }).toList(),
+                ),
+              );
+            } else if (state is GetSourcesErrorState) {
+              return SizedBox();
+              // return Text(state.error, style: theme.textTheme.titleMedium);
+            } else {
+              return SizedBox();
+            }
+          },
+        ),
+        BlocBuilder<LayoutCubit, LayoutState>(
+          buildWhen: (previous, current) =>
+              current is GetNewsSuccessState ||
+              current is GetNewsLoadingState ||
+              current is GetNewsErrorState,
+          builder: (context, state) {
+            if (state is GetNewsLoadingState) {
+              return Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              );
+            } else if (state is GetNewsSuccessState) {
+              return Expanded(
+                child: ListView.separated(
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: .all(16),
+                      decoration: BoxDecoration(
                         borderRadius: .circular(16),
-                        child: CachedNetworkImage(
-                          imageUrl: provider.articles![index].urlToImage??'',
-                          placeholder: (context, url) =>
-                              CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                        ),
-
-                        // Image.network(
-                        //   provider.articles![index].urlToImage ??
-                        //       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU8gBmgKJfyFettXPVl5na8uYWmmCTKGkdjVzNUyjJFg&s=10',
-                        // ),
+                        border: Border.all(color: theme.primaryColor),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        provider.articles![index].title ?? '',
-                        style: theme.textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: Text(
-                              provider.articles![index].author ?? '',
-                              style: TextStyle(color: Colors.grey),
+                          ClipRRect(
+                            borderRadius: .circular(16),
+                            child: CachedNetworkImage(
+                              imageUrl: cubit.articles![index].urlToImage ?? '',
+                              placeholder: (context, url) =>
+                                  CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
                             ),
+
+                            // Image.network(
+                            //   provider.articles![index].urlToImage ??
+                            //       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU8gBmgKJfyFettXPVl5na8uYWmmCTKGkdjVzNUyjJFg&s=10',
+                            // ),
                           ),
+                          const SizedBox(height: 16),
                           Text(
-                            provider.articles![index].publishedAt!.substring(
-                              0,
-                              10,
-                            ),
-                            style: TextStyle(color: Colors.grey),
+                            cubit.articles![index].title ?? '',
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  cubit.articles![index].author ?? '',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                              Text(
+                                cubit.articles![index].publishedAt!.substring(
+                                  0,
+                                  10,
+                                ),
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(height: 16);
-              },
-              itemCount: provider.articles!.length,
-            ),
-          ),
-        ],
-      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(height: 16);
+                  },
+                  itemCount: cubit.articles!.length,
+                ),
+              );
+            } else if (state is GetNewsErrorState) {
+              return Center(
+                child: Text(state.error, style: theme.textTheme.titleLarge),
+              );
+            } else {
+              return SizedBox();
+            }
+          },
+        ),
+      ],
     );
   }
 }

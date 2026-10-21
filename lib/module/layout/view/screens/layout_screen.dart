@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:news/module/layout/view/manager/layout_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news/core/di/di.dart';
+import 'package:news/module/layout/view/cubit/layot_cubit.dart';
+import 'package:news/module/layout/view/cubit/layout_state.dart';
 import 'package:news/module/layout/view/screens/artical_screen.dart';
 import 'package:news/module/layout/view/screens/category_screen.dart';
-import 'package:provider/provider.dart';
 
 class LayoutScreen extends StatelessWidget {
   const LayoutScreen({super.key});
@@ -11,62 +13,76 @@ class LayoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    return ChangeNotifierProvider(
-      create: (context) => LayoutProvider(),
-      child: Consumer<LayoutProvider>(
-        builder: (context, provider, child) => Scaffold(
-          appBar: AppBar(
-            foregroundColor: theme.primaryColor,
-            centerTitle: true,
-            backgroundColor: theme.scaffoldBackgroundColor,
-            title: Text(
-              provider.selectedCategory == null
-                  ? 'Home'
-                  : provider.selectedCategory!.name,
-              style: theme.textTheme.titleSmall,
+    return BlocProvider(
+      create: (context) => getIt<LayoutCubit>(),
+      child: BlocConsumer<LayoutCubit, LayoutState>(
+        listener: (context, state) {
+          if (state is GoToHome) {
+            Navigator.pop(context);
+          }
+        },
+        builder: (context, state) {
+          var cubit = BlocProvider.of<LayoutCubit>(context);
+
+          return Scaffold(
+            appBar: AppBar(
+              foregroundColor: theme.primaryColor,
+              centerTitle: true,
+              backgroundColor: theme.scaffoldBackgroundColor,
+              title: Text(
+                cubit.selectedCategory == null
+                    ? 'Home'
+                    : cubit.selectedCategory!.name,
+                style: theme.textTheme.titleSmall,
+              ),
+
+              actions: [Icon(Icons.search, size: 28)],
             ),
 
-            actions: [Icon(Icons.search, size: 28)],
-          ),
-
-          drawer: Drawer(
-            backgroundColor: theme.scaffoldBackgroundColor,
-            child: Column(
-              children: [
-                DrawerHeader(
-                  decoration: BoxDecoration(color: theme.primaryColor),
-                  child: Center(
-                    child: Text('News App', style: theme.textTheme.titleLarge),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: InkWell(
-                    onTap: () {
-                      provider.goToHome();
-                      Navigator.pop(context);
-                    },
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.home_rounded,
-                          color: theme.primaryColor,
-                          size: 34,
-                        ),
-                        SizedBox(width: 16),
-                        Text('Go To Home', style: theme.textTheme.titleMedium),
-                      ],
+            drawer: Drawer(
+              backgroundColor: theme.scaffoldBackgroundColor,
+              child: Column(
+                children: [
+                  DrawerHeader(
+                    decoration: BoxDecoration(color: theme.primaryColor),
+                    child: Center(
+                      child: Text(
+                        'News App',
+                        style: theme.textTheme.titleLarge,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      onTap: () {
+                        cubit.goToHome();
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.home_rounded,
+                            color: theme.primaryColor,
+                            size: 34,
+                          ),
+                          SizedBox(width: 16),
+                          Text(
+                            'Go To Home',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          
-          body: provider.selectedCategory != null
-              ? ArticalScreen()
-              : CategoryScreen(),
-        ),
+
+            body: cubit.selectedCategory != null
+                ? ArticalScreen()
+                : CategoryScreen(),
+          );
+        },
       ),
     );
   }
