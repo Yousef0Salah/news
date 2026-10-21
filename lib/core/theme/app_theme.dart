@@ -16,6 +16,7 @@ abstract class AppTheme {
   static ThemeData darkTheme = ThemeData(
     scaffoldBackgroundColor: AppColors.black,
     primaryColor: AppColors.white,
+    
 
     textTheme: TextTheme(
       titleLarge: AppText.s32wB.copyWith(color: AppColors.black),

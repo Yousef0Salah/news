@@ -16,9 +16,9 @@ class LayoutCubit extends Cubit<LayoutState> {
   AppCategoreis? selectedCategory;
   Sources? selectedsource;
 
-  bool isLoading = false;
+  bool isSearch = true;
 
-  Repo repo ;
+  Repo repo;
 
   void onChangeCategoty(AppCategoreis category) {
     selectedCategory = category;
@@ -51,7 +51,6 @@ class LayoutCubit extends Cubit<LayoutState> {
     } catch (e) {
       emit(GetSourcesErrorState(error: e.toString()));
       getNews();
-     
     }
   }
 
@@ -61,7 +60,6 @@ class LayoutCubit extends Cubit<LayoutState> {
       articles = await repo.getNews(selectedsource?.id ?? '');
       emit(GetNewsSuccessState());
     } catch (e) {
-      
       emit(GetNewsErrorState(error: e.toString()));
     }
   }

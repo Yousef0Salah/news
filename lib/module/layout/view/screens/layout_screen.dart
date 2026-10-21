@@ -5,6 +5,7 @@ import 'package:news/module/layout/view/cubit/layot_cubit.dart';
 import 'package:news/module/layout/view/cubit/layout_state.dart';
 import 'package:news/module/layout/view/screens/artical_screen.dart';
 import 'package:news/module/layout/view/screens/category_screen.dart';
+import 'package:news/module/layout/view/widget/custom_search.dart';
 
 class LayoutScreen extends StatelessWidget {
   const LayoutScreen({super.key});
@@ -25,19 +26,26 @@ class LayoutScreen extends StatelessWidget {
           var cubit = BlocProvider.of<LayoutCubit>(context);
 
           return Scaffold(
-            appBar: AppBar(
-              foregroundColor: theme.primaryColor,
-              centerTitle: true,
-              backgroundColor: theme.scaffoldBackgroundColor,
-              title: Text(
-                cubit.selectedCategory == null
-                    ? 'Home'
-                    : cubit.selectedCategory!.name,
-                style: theme.textTheme.titleSmall,
-              ),
+            appBar: cubit.isSearch
+                ? CustomSearch()
+                : AppBar(
+                    foregroundColor: theme.primaryColor,
+                    centerTitle: true,
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                    title: Text(
+                      cubit.selectedCategory == null
+                          ? 'Home'
+                          : cubit.selectedCategory!.name,
+                      style: theme.textTheme.titleSmall,
+                    ),
 
-              actions: [Icon(Icons.search, size: 28)],
-            ),
+                    actions: [
+                      InkWell(
+                        onTap: () {},
+                        child: Icon(Icons.search, size: 28),
+                      ),
+                    ],
+                  ),
 
             drawer: Drawer(
               backgroundColor: theme.scaffoldBackgroundColor,
