@@ -9,6 +9,8 @@ abstract class Repo {
   Future<List<Articles>> getNews(String sourceId);
 
   Future<List<Sources>> getSource(String categoryId);
+
+  Future<List<Articles>> getResultSearch(String query);
 }
 
 @Injectable(as: Repo)
@@ -49,6 +51,24 @@ class RepoImp implements Repo {
       } else {
         throw response.data['message'];
       }
+    } catch (e) {
+      rethrow;
+    }
+
+  }
+
+  @override
+  Future<List<Articles>> getResultSearch(String query) async {
+    try {
+      
+        var response = await remoteDataSource.getResultSearch(query);
+        if (response.statusCode == 200) {
+          var data = NewsResponse.fromJson(response.data);
+          return data.articles;
+        } else {
+          throw response.data['message'];
+        }
+      
     } catch (e) {
       rethrow;
     }

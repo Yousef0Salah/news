@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:news/core/categoreis/app_categoreis.dart';
@@ -12,13 +15,23 @@ class LayoutCubit extends Cubit<LayoutState> {
 
   List<Sources>? sources = [];
   List<Articles>? articles = [];
+  List<Articles>? resultSearch = [];
 
   AppCategoreis? selectedCategory;
   Sources? selectedsource;
 
-  bool isSearch = true;
+  TextEditingController search = TextEditingController();
+  bool isSearch = false;
 
   Repo repo;
+
+  void closeSearch() {
+    _searchDebounce?.cancel();
+    search.clear();
+    resultSearch = [];
+    isSearch = !isSearch;
+    emit(ChangeSearchState());
+  }
 
   void onChangeCategoty(AppCategoreis category) {
     selectedCategory = category;
@@ -62,5 +75,42 @@ class LayoutCubit extends Cubit<LayoutState> {
     } catch (e) {
       emit(GetNewsErrorState(error: e.toString()));
     }
+  }
+
+  Future<void> getResultSearch(String query) async {
+    // final query = search.text.trim();
+
+    if (query.trim().isEmpty) {
+      resultSearch = [];
+      emit(GetResultSearchSuccessState());
+      return;
+    }
+
+    emit(GetResultSearchLoadingState());
+
+    try {
+      resultSearch = await repo.getResultSearch(query);
+      emit(GetResultSearchSuccessState());
+    } catch (e) {
+      emit(GetResultSearchErrorState(error: e.toString()));
+    }
+  }
+
+  Timer? _searchDebounce;
+
+  void searchWithDebounce(String query) {
+    _searchDebounce?.cancel();
+
+    final value = query.trim();
+
+    if (value.isEmpty) {
+      resultSearch = [];
+      emit(GetResultSearchSuccessState());
+      return;
+    }
+
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      getResultSearch(value);
+    });
   }
 }

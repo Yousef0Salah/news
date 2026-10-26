@@ -52,6 +52,7 @@ class ArticalScreen extends StatelessWidget {
             }
           },
         ),
+        
         BlocBuilder<LayoutCubit, LayoutState>(
           buildWhen: (previous, current) =>
               current is GetNewsSuccessState ||
@@ -202,6 +203,7 @@ class ArticalScreen extends StatelessWidget {
             }
           },
         ),
+      
       ],
     );
   }

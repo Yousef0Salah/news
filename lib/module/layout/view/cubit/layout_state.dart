@@ -2,6 +2,8 @@ sealed class LayoutState {}
 
 class InitState extends LayoutState {}
 
+class ChangeSearchState extends LayoutState {}
+
 class GoToHome extends LayoutState {}
 
 class ChangeCategoty extends LayoutState {}
@@ -24,4 +26,13 @@ class GetNewsSuccessState extends LayoutState {}
 class GetNewsErrorState extends LayoutState {
   String error;
   GetNewsErrorState({required this.error});
+}
+
+class GetResultSearchLoadingState extends LayoutState {}
+
+class GetResultSearchSuccessState extends LayoutState {}
+
+class GetResultSearchErrorState extends LayoutState {
+  String error;
+  GetResultSearchErrorState({required this.error});
 }

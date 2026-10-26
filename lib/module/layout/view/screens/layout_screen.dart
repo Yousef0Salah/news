@@ -5,11 +5,14 @@ import 'package:news/module/layout/view/cubit/layot_cubit.dart';
 import 'package:news/module/layout/view/cubit/layout_state.dart';
 import 'package:news/module/layout/view/screens/artical_screen.dart';
 import 'package:news/module/layout/view/screens/category_screen.dart';
+import 'package:news/module/layout/view/screens/search_screen.dart';
 import 'package:news/module/layout/view/widget/custom_search.dart';
 
 class LayoutScreen extends StatelessWidget {
   const LayoutScreen({super.key});
   static const String id = 'layout';
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,7 @@ class LayoutScreen extends StatelessWidget {
 
                     actions: [
                       InkWell(
-                        onTap: () {},
+                        onTap: cubit.closeSearch,
                         child: Icon(Icons.search, size: 28),
                       ),
                     ],
@@ -86,7 +89,9 @@ class LayoutScreen extends StatelessWidget {
               ),
             ),
 
-            body: cubit.selectedCategory != null
+            body:  cubit.isSearch ? SearchScreen():
+            
+            cubit.selectedCategory != null
                 ? ArticalScreen()
                 : CategoryScreen(),
           );

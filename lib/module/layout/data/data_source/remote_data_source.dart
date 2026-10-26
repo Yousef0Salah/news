@@ -6,6 +6,8 @@ abstract class RemoteDataSource {
   Future<Response> getNews(String sourceId);
 
   Future<Response> getSource(String categoryId);
+
+  Future<Response> getResultSearch(String query);
 }
 
 @Injectable(as: RemoteDataSource)
@@ -22,6 +24,14 @@ class RemoteDataSourceImp implements RemoteDataSource {
     return apiService.dio.get(
       'top-headlines/sources',
       queryParameters: {'category': categoryId},
+    );
+  }
+
+  @override
+  Future<Response<dynamic>> getResultSearch(String query) {
+    return apiService.dio.get(
+      'everything?q=$query',
+      queryParameters: {'pageSize': 15, 'searchIn': 'title,description'},
     );
   }
 }
